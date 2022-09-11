@@ -1,19 +1,23 @@
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L, { marker } from "leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import useGeoLocation from "../../hooks/use-geo-location";
 import Button from "../UI/Button/Button";
 
-const ZOOM_LEVEL = 9;
+import { getRandomItems } from "../../utils/data-manipulations";
+
+const ZOOM_LEVEL = 7;
+const CENTER = {
+  lat: "31.768318",
+  lng: "35.213711",
+};
 
 const Map = () => {
-  const [center, setCenter] = useState({
-    lat: "32.104569500422855",
-    lng: "34.87674447158233",
-  });
+  const [cities, setCities] = useState([]);
 
   const mapRef = useRef();
 
@@ -23,6 +27,17 @@ const Map = () => {
   });
 
   const location = useGeoLocation();
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await axios.get(
+        "https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"
+      );
+      const citiesArray = getRandomItems(data, 20);
+
+      setCities(citiesArray);
+    })();
+  }, []);
 
   const showMyLocation = () => {
     if (location.loaded && !location.error) {
@@ -36,6 +51,16 @@ const Map = () => {
     }
   };
 
+  const citiesMarks = cities.map((city) => {
+    return (
+      <Marker position={[city.lat, city.lng]} icon={markerIcon}>
+        <Popup>
+          <strong>The city of {city.name}.</strong>
+        </Popup>
+      </Marker>
+    );
+  });
+
   return (
     <Fragment>
       <MapContainer
@@ -46,7 +71,7 @@ const Map = () => {
           display: "flex",
           justifyContent: "center",
         }}
-        center={center}
+        center={CENTER}
         zoom={ZOOM_LEVEL}
         scrollWheelZoom={false}
       >
@@ -69,6 +94,7 @@ const Map = () => {
             </Popup>
           </Marker>
         )}
+        {cities && citiesMarks}
       </MapContainer>
       <Button onClick={showMyLocation}>Show My Location</Button>
     </Fragment>

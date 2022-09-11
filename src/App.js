@@ -1,5 +1,4 @@
 import Map from "./components/Map/Map";
-import Button from "./components/UI/Button/Button";
 
 function App() {
 
