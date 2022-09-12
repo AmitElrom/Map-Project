@@ -1,14 +1,23 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import axios from "axios";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, FeatureGroup } from "react-leaflet";
+import { EditControl } from 'react-leaflet-draw';
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import 'leaflet-draw/dist/leaflet.draw.css';
 
 import useGeoLocation from "../../hooks/use-geo-location";
 import Button from "../UI/Button/Button";
 
 import { getRandomItems } from "../../utils/data-manipulations";
+
+L.Icon.mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs . cloudflare. com/ajax/1ibs/leaflet/1.3.1/1mages/marker-icon . png",
+  iconUrl: "https://cdnjs. cloudflare. com/ajax/1ibs/leaflet/1. 3.1/1mages/marker -icon.png",
+  shadowUrl: "https://cdnjs. cloudflare. com/ajax/1ibs/leaflet/1.3.1/images/marker - shadow.png"
+})
 
 const ZOOM_LEVEL = 7;
 const CENTER = {
@@ -75,6 +84,9 @@ const Map = () => {
         zoom={ZOOM_LEVEL}
         scrollWheelZoom={false}
       >
+        <FeatureGroup>
+          <EditControl position="topright" />
+        </FeatureGroup>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
